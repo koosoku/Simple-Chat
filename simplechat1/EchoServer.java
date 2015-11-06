@@ -77,6 +77,12 @@ public class EchoServer extends AbstractServer
   protected void clientConnected(ConnectionToClient client) {
 	  System.out.println("Client : "+ client + " has connected.");
   }
+  synchronized protected void clientDisconnected(ConnectionToClient client) {
+	  System.out.println("Client : " + client + " has disconnected.");
+  }
+  synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
+	  clientDisconnected(client);
+  }
   
   //Class methods ***************************************************
   
