@@ -91,5 +91,14 @@ public class ChatClient extends AbstractClient
     catch(IOException e) {}
     System.exit(0);
   }
+  
+  protected void connectionException(Exception exception) {
+	  System.out.println("The client will be closed");
+	  connectionClosed(false);
+  }
+  protected void connectionClosed(boolean keepalive) {
+	 if (!keepalive)
+		 System.exit(0);
+  }
 }
 //End of ChatClient class
