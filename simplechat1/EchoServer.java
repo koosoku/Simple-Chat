@@ -5,7 +5,6 @@
 import java.io.*;
 
 import common.ChatIF;
-
 import ocsf.server.*;
 
 /**
@@ -59,10 +58,13 @@ public class EchoServer extends AbstractServer
    * This method overrides the one in the superclass.  Called
    * when the server starts listening for connections.
    */
+  
+  boolean isServerClosed;
   protected void serverStarted()
   {
     System.out.println
       ("Server listening for connections on port " + getPort());
+    isServerClosed = false;
   }
   
   /**
@@ -73,6 +75,7 @@ public class EchoServer extends AbstractServer
   {
     System.out.println
       ("Server has stopped listening for connections.");
+    isServerClosed = true;
   }
   
   
@@ -96,8 +99,53 @@ public class EchoServer extends AbstractServer
   }
   
   public void handleMessageFromServerUI(String message){
-	  serverUI.display("SERVER MSG>" + message);
-	  sendToAllClients("SERVER MSG>" + message);
+	  if(message.charAt(0) == '#'){
+			try{
+				handleServerCommands(message);
+			}
+			catch(IOException e){
+				System.out.println(e);
+			}
+		}
+	  else{
+		  serverUI.display("SERVER MSG>" + message);
+		  sendToAllClients("SERVER MSG>" + message);
+	  }
+  }
+  
+  private void handleServerCommands(String message) throws IOException{
+	  //create string array to handle setHost and setPort
+	  String[] splittedMessage = message.split(" ", 2);
+	  switch (splittedMessage[0]){ 
+	  	  case "#quit" : System.exit(0);
+	  	  	break;	
+		  case "#stop" : stopListening();
+		  	break;
+		  case "#close": close();
+		  	break;
+		  case "#setport":
+		  	if(isServerClosed) {
+		  		setPort(Integer.parseInt(splittedMessage[1].replace("<", "").replace(">", "")));
+		  	}
+			else{
+				throw new IOException("Please close the server before setting port");
+			}
+		  	break;
+		  case "#start":
+			if(!isListening()) {
+				listen();
+		  	}
+			else{
+				throw new IOException("The server is currently listening");
+			}
+			break;
+		  case "#getport":
+			  serverUI.display("Port: "+ getPort());
+			  break;
+		  default:
+			  throw new IOException("Invalid Command"); 
+		  	
+	  }
   }
   
   
