@@ -50,8 +50,32 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+	  if((boolean)(client.getInfo("isFirstMessage"))){	
+			String[] splittedMessage = ((String)msg).split(" ", 2);
+			client.setInfo("isFirstMessage", false);
+			if(splittedMessage[0].equals("#login")){
+				client.setInfo("loginID", splittedMessage[1]);
+			}
+			else{
+				try{
+					client.sendToClient("Please login first");
+					client.close();
+				}
+				catch(IOException e){
+				}
+			}
+		}
+		else{
+			if(((String)msg).startsWith("#login")){
+				try{
+					client.sendToClient("You have already logged in");
+				}
+				catch(IOException e){
+				}
+			}
+		    System.out.println("Message received: " + msg + " from " + client.getInfo("loginID"));
+		    this.sendToAllClients((String)client.getInfo("loginID")+ ">"+ msg);
+		}
   }
     
   /**
@@ -81,6 +105,7 @@ public class EchoServer extends AbstractServer
   
   protected void clientConnected(ConnectionToClient client) {
 	  System.out.println("Client : "+ client + " has connected.");
+	  client.setInfo("isFirstMessage", true);
   }
   synchronized protected void clientDisconnected(ConnectionToClient client) {
 	  System.out.println("Client : " + client + " has disconnected.");
