@@ -3,6 +3,7 @@
 // license found at www.lloseng.com 
 
 import java.io.*;
+
 import ocsf.server.*;
 
 /**
@@ -70,6 +71,11 @@ public class EchoServer extends AbstractServer
   {
     System.out.println
       ("Server has stopped listening for connections.");
+  }
+  
+  
+  protected void clientConnected(ConnectionToClient client) {
+	  System.out.println("Client : "+ client + " has connected.");
   }
   
   //Class methods ***************************************************
