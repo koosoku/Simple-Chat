@@ -4,6 +4,8 @@
 
 import java.io.*;
 
+import common.ChatIF;
+
 import ocsf.server.*;
 
 /**
@@ -83,6 +85,21 @@ public class EchoServer extends AbstractServer
   synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
 	  clientDisconnected(client);
   }
+  
+  
+  ChatIF serverUI;
+  
+  public EchoServer(int port,ChatIF serverUI) 
+  {
+    super(port);
+    this.serverUI = serverUI;
+  }
+  
+  public void handleMessageFromServerUI(String message){
+	  serverUI.display("SERVER MSG>" + message);
+	  sendToAllClients("SERVER MSG>" + message);
+  }
+  
   
   //Class methods ***************************************************
   
